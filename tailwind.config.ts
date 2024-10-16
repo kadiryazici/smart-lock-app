@@ -18,6 +18,7 @@ const config: Config = {
         dark: "var(--dark)",
         darker: "var(--darker)",
         'text-light': "var(--text-light)",
+        stroke: 'var(--stroke-color)',
       },
       fontFamily: {
         'geist-mono': 'var(--font-geist-mono)'

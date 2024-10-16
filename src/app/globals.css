@@ -10,6 +10,44 @@
   --dark: #3B3B45;
   --darker: #35353E;
   --text-light: #B5B5BF;
+  --stroke-color: #9E9EB4;
 }
 
-/* @layer utilities {} */
+@layer base {
+  .header1-inter {
+    font-family: var(--font-inter);
+    font-weight: 600;
+    line-height: 40px;
+    font-size: 36px;
+    letter-spacing: -0.03em;
+  }
+
+  .regular-text-inter {
+    font-family: var(--font-inter);
+    font-weight: 500;
+    line-height: 24px;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .regular-text-mono {
+    font-family: var(--font-geist-mono);
+    font-weight: 300;
+    line-height: 32px;
+    font-size: 14px;
+  }
+
+  @media not all and (min-width: 768px) {
+    .header1-inter {
+      font-size: 30px;
+    }
+
+    .regular-text-inter {
+      font-size: 14px;
+    }
+
+    .regular-text-mono {
+      font-size: 12px;
+    }
+  }
+}

@@ -1,10 +1,10 @@
 "use client";
 
 import cn from "classnames";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from './SmartLockDevice.module.scss'
 import { SmartLockIcon } from "./SmartLockIcon";
-import { useProcessQueue } from "./SmartLockDevice.hooks";
+import { useProcessQueue, useStateAsRef } from "./SmartLockDevice.hooks";
 import { sleep } from "./SmartLockDevice.utils";
 
 enum LockState {
@@ -24,8 +24,7 @@ const demoPins = ['1234', '4567', '8899'];
 
 type Props = {
   outline?: boolean;
-  showcase?: boolean;
-  showcasePins?: number[];
+  preview?: string[];
 }
 
 export function SmartLockDevice(props: Props) {
@@ -34,7 +33,9 @@ export function SmartLockDevice(props: Props) {
   const [checkButtonState, setCheckButtonState] = useState(LockState.None);
   const queue = useProcessQueue();
 
-  function handleDigitPress(digit: number) {
+  function handleDigitPress(digit: number, preview = false) {
+    if (props.preview != null && preview === false) return;
+
     if (pressedDigits.includes(digit.toString())) {
       return
     }
@@ -48,10 +49,10 @@ export function SmartLockDevice(props: Props) {
     setCheckButtonState(LockState.None);
   }, [])
 
-  function validateAccessCodeInput() {
+  async function validateAccessCodeInput() {
     const result = demoPins.includes(pressedDigits) ? LockState.Success : LockState.Failure;
 
-    queue.run([
+    await queue.run([
       () => setDigitState(result),
       () => blink(result),
       () => sleep(150),
@@ -64,6 +65,40 @@ export function SmartLockDevice(props: Props) {
       }
     ])
   }
+
+  const enteredDigitsRef = useStateAsRef(pressedDigits);
+
+  useEffect(() => {
+    if (props.preview == null) return;
+
+    let timeout = -1;
+    let current = 0;
+
+    function loop() {
+      window.clearTimeout(timeout);
+      timeout = window.setTimeout(async () => {
+        const pin = props.preview![current];
+        const digits = enteredDigitsRef.current;
+
+        if (digits.length < pin.length) {
+          handleDigitPress(parseInt(pin[digits.length]), true);
+        } else {
+          await validateAccessCodeInput();
+          setPressedDigits('');
+          current = (current + 1) % props.preview!.length
+        }
+
+        loop();
+      }, 500)
+    }
+
+    loop();
+
+    return () => {
+      window.clearTimeout(timeout);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.preview])
 
   return (
     <div className={cn([
@@ -104,7 +139,7 @@ export function SmartLockDevice(props: Props) {
                           className={cn([
                             baseClasses,
                             pressedDigits.includes(row.value.toString()) && [
-                              styles.button_pressed,
+                              !props.outline && styles.button_pressed,
                               digitState === LockState.Success || digitState === LockState.None ? "!text-green-400" : "!text-red-500"
                             ],
                           ])}

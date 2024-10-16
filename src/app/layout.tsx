@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistMono.variable} ${inter.variable} antialiased`}
       >
-        <div>
+        <div className="w-full flex flex-col px-10">
           {children}
         </div>
       </body>
