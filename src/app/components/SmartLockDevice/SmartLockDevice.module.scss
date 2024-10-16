@@ -1,0 +1,8 @@
+.button {
+  background: linear-gradient(135deg, #41414c 0%, #3a3a44 100%);
+  box-shadow: 4px 4px 8px 0 #36363fe6;
+}
+
+.button_pressed {
+  box-shadow: 4px 4px 8px 0 #36363fe6 inset;
+}

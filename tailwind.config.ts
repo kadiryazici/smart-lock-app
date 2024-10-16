@@ -11,7 +11,17 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        success: "var(--success)",
+        fail: "var(--fail)",
+        gray: "var(--gray)",
+        grayer: "var(--grayer)",
+        dark: "var(--dark)",
+        darker: "var(--darker)",
+        'text-light': "var(--text-light)",
       },
+      fontFamily: {
+        'geist-mono': 'var(--font-geist-mono)'
+      }
     },
   },
   plugins: [],
