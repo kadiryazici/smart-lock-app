@@ -25,11 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className="min-h-full" lang="en">
       <body
-        className={`${geistMono.variable} ${inter.variable} antialiased`}
+        className={`${geistMono.variable} ${inter.variable} antialiased min-h-full`}
       >
-        <div className="w-full flex flex-col px-10">
+        <div className="w-full min-h-full flex flex-col px-10">
           {children}
         </div>
       </body>

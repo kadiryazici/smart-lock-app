@@ -16,7 +16,7 @@ export default function Home() {
   })
 
   return <>
-    <div className="py-[82px] max-w-[804px] w-full mx-auto border-l border-r border-dashed border-stroke">
+    <div className="py-[82px] max-w-[804px] w-full mx-auto border-l border-r border-dashed border-stroke min-h-full">
       <div className="gap-[20px] w-full flex flex-col md:flex-row flex-nowrap md:justify-between max-md:items-center border-b border-t border-dashed border-stroke">
         <div className="md:pl-[82px] max-md:text-center my-auto block w-full ">
           <div className="max-md:mx-auto mb-[34px] max-w-[350px]">
@@ -52,7 +52,7 @@ export default function Home() {
       </div>
 
       <div
-        className="relative border border-dashed border-stroke text-[#9E9EB4] regular-text-mono w-full mx-auto max-w-[804px] whitespace-nowrap overflow-hidden"
+        className="relative border-t border-b border-dashed border-stroke text-[#9E9EB4] regular-text-mono w-full mx-auto max-w-[804px] whitespace-nowrap overflow-hidden"
       >
         <div
 
