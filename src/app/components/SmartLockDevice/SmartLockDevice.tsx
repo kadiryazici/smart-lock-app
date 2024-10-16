@@ -20,11 +20,10 @@ const digitGrid = [
   [{ type: 'digit', value: 0 }, { type: 'buttonApply', value: '✓' }],
 ] as const;
 
-const demoPins = ['1234', '4567', '8899'];
-
 type Props = {
   outline?: boolean;
   preview?: string[];
+  validPins: string[];
 }
 
 export function SmartLockDevice(props: Props) {
@@ -40,7 +39,7 @@ export function SmartLockDevice(props: Props) {
       return
     }
 
-    setPressedDigits((previous) => previous + digit.toString());
+    setPressedDigits((prev) => prev + digit.toString());
   }
 
   const blink = useCallback(async (state: LockState.Failure | LockState.Success) => {
@@ -49,8 +48,11 @@ export function SmartLockDevice(props: Props) {
     setCheckButtonState(LockState.None);
   }, [])
 
+  const enteredDigitsRef = useStateAsRef(pressedDigits);
+
   async function validateAccessCodeInput() {
-    const result = demoPins.includes(pressedDigits) ? LockState.Success : LockState.Failure;
+    const digits = enteredDigitsRef.current;
+    const result = props.validPins.includes(digits) ? LockState.Success : LockState.Failure;
 
     await queue.run([
       () => setDigitState(result),
@@ -65,8 +67,6 @@ export function SmartLockDevice(props: Props) {
       }
     ])
   }
-
-  const enteredDigitsRef = useStateAsRef(pressedDigits);
 
   useEffect(() => {
     if (props.preview == null) return;
@@ -84,7 +84,6 @@ export function SmartLockDevice(props: Props) {
           handleDigitPress(parseInt(pin[digits.length]), true);
         } else {
           await validateAccessCodeInput();
-          setPressedDigits('');
           current = (current + 1) % props.preview!.length
         }
 

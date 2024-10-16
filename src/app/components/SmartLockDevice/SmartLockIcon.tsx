@@ -25,7 +25,7 @@ export const SmartLockIcon = React.memo(function SmartLockIcon(props: Props) {
       </g>
       <path d="M26 16C26 14.8954 26.8954 14 28 14C29.1046 14 30 14.8954 30 16V23.5388C30 23.9537 29.9139 24.3641 29.7472 24.7441L27.709 29.3898C27.2714 30.3873 27.4088 31.5436 28.0681 32.4107L30.5708 35.7026C31.1543 36.4701 31.3334 37.4712 31.0522 38.3933L30.1305 41.4159C30.044 41.6996 30 41.9945 30 42.291V54H26V42.291C26 41.9945 26.044 41.6996 26.1305 41.416L27.0522 38.3933C27.3334 37.4712 27.1543 36.4701 26.5708 35.7026L24.0681 32.4107C23.4088 31.5436 23.2714 30.3873 23.709 29.3898L25.7472 24.7441C25.9139 24.3641 26 23.9537 26 23.5388V16Z" fill="#35353E" />
       <defs>
-        <filter id="filter0_ii_4406_70" x="12" y="20" width="32" height="32" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <filter id="filter0_ii_4406_70" x="12" y="20" width="32" height="32" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
           <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
