@@ -3,6 +3,10 @@
   box-shadow: 4px 4px 8px 0 #36363fe6;
 }
 
-.button_pressed {
+
+
+.button_pressed,
+.button:active {
   box-shadow: 4px 4px 8px 0 #36363fe6 inset;
+  @apply text-green-400;
 }

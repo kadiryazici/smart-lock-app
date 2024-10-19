@@ -1,7 +1,7 @@
 "use client";
 
 import cn from "classnames";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from './SmartLockDevice.module.scss'
 import { SmartLockIcon } from "./SmartLockIcon";
 import { useProcessQueue, useStateAsRef } from "./SmartLockDevice.hooks";
@@ -28,15 +28,21 @@ type Props = {
 
 export function SmartLockDevice(props: Props) {
   const [pressedDigits, setPressedDigits] = useState('');
-  const [digitState, setDigitState] = useState(LockState.None);
   const [checkButtonState, setCheckButtonState] = useState(LockState.None);
   const queue = useProcessQueue();
+  const digitElements = useRef<Record<number, HTMLButtonElement>>({});
 
   function handleDigitPress(digit: number, preview = false) {
     if (props.preview != null && preview === false) return;
 
-    if (pressedDigits.includes(digit.toString())) {
-      return
+    if (preview) {
+      const element = digitElements.current[digit];
+
+      queue.run([
+        () => element?.classList.add(styles.button_pressed),
+        () => sleep(100),
+        () => element?.classList.remove(styles.button_pressed),
+      ])
     }
 
     setPressedDigits((prev) => prev + digit.toString());
@@ -55,15 +61,13 @@ export function SmartLockDevice(props: Props) {
     const result = props.validPins.includes(digits) ? LockState.Success : LockState.Failure;
 
     await queue.run([
-      () => setDigitState(result),
-      () => blink(result),
-      () => sleep(150),
-      () => blink(result),
-      () => sleep(150),
+      queue.repeat(2, [
+        () => blink(result),
+        () => sleep(150),
+      ]),
       () => blink(result),
       () => {
         setPressedDigits('');
-        setDigitState(LockState.None);
       }
     ])
   }
@@ -137,11 +141,10 @@ export function SmartLockDevice(props: Props) {
                           key={index}
                           className={cn([
                             baseClasses,
-                            pressedDigits.includes(row.value.toString()) && [
-                              !props.outline && styles.button_pressed,
-                              digitState === LockState.Success || digitState === LockState.None ? "!text-green-400" : "!text-red-500"
-                            ],
                           ])}
+                          ref={(element) => {
+                            digitElements.current[row.value] = element!
+                          }}
                           onClick={() => handleDigitPress(row.value)}
                         >
                           {row.value}

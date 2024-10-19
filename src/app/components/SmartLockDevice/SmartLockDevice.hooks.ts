@@ -1,31 +1,38 @@
 import React, { useCallback, useEffect, useRef } from "react";
 
-export type Process = (() => void) | (() => Promise<void>)
+export type Process = () => Promise<void | unknown> | void | unknown;
+type ProcessList = Process | ProcessList[];
 
 export function useProcessQueue() {
-  const activeProcessId = useRef<number | null>(-1);
+  const activeProcesses = useRef<Set<number>>(new Set());
 
-  const run = useCallback(async (processes: Process[]) => {
+  const run = useCallback(async (processes: ProcessList[]) => {
     const id = Math.random();
-    activeProcessId.current = id;
+    activeProcesses.current.add(id);
 
-    for (const process of processes) {
-      if (id !== activeProcessId.current) {
+    // @ts-expect-error Infinity confuses typescript
+    for (const process of processes.flat(Infinity) as Process[]) {
+      if (!activeProcesses.current.has(id)) {
         return;
       }
 
       await Promise.resolve(process())
     }
 
-    activeProcessId.current = null;
+    activeProcesses.current.delete(id);
   }, []);
 
   useEffect(() => () => {
-    activeProcessId.current = -1;
+    activeProcesses.current.clear();
   }, []);
+
+  function repeat(times: number, queue: ProcessList) {
+    return Array.from({ length: times }, () => queue);
+  }
 
   return {
     run,
+    repeat
   }
 }
 
