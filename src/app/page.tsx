@@ -30,7 +30,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="h-[36px] hover:bg-[#FBFBFB] hover:text-[#353642] rounded-[50px] cursor-pointer bg-[#353642] text-[#FBFBFB] py-[10px] px-[24px] regular-text-mono font-bold inline-flex items-center gap-[4px]">
+          <div className="hover:bg-[#FBFBFB] hover:text-[#353642] rounded-[50px] cursor-pointer bg-[#353642] text-[#FBFBFB] py-0.5 px-6 regular-text-mono font-bold inline-flex items-center gap-1">
             {"Learn more"}{arrowRight}
           </div>
         </div>

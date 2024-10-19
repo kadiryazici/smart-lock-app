@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export type Process = () => Promise<void | unknown> | void | unknown;
 type ProcessList = Process | ProcessList[];
@@ -34,14 +34,4 @@ export function useProcessQueue() {
     run,
     repeat
   }
-}
-
-export function useStateAsRef<T>(value: T) {
-  const ref = useRef(value);
-
-  React.useLayoutEffect(() => {
-    ref.current = value;
-  })
-
-  return ref;
 }

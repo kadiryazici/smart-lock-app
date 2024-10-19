@@ -4,7 +4,7 @@ import cn from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from './SmartLockDevice.module.scss'
 import { SmartLockIcon } from "./SmartLockIcon";
-import { useProcessQueue, useStateAsRef } from "./SmartLockDevice.hooks";
+import { useProcessQueue } from "./SmartLockDevice.hooks";
 import { sleep } from "./SmartLockDevice.utils";
 
 enum LockState {
@@ -27,25 +27,24 @@ type Props = {
 }
 
 export function SmartLockDevice(props: Props) {
-  const [pressedDigits, setPressedDigits] = useState('');
-  const [checkButtonState, setCheckButtonState] = useState(LockState.None);
   const queue = useProcessQueue();
+  const pressedDigits = useRef('');
   const digitElements = useRef<Record<number, HTMLButtonElement>>({});
+  const [checkButtonState, setCheckButtonState] = useState(LockState.None);
 
   function handleDigitPress(digit: number, preview = false) {
     if (props.preview != null && preview === false) return;
 
-    if (preview) {
-      const element = digitElements.current[digit];
 
-      queue.run([
-        () => element?.classList.add(styles.button_pressed),
-        () => sleep(100),
-        () => element?.classList.remove(styles.button_pressed),
-      ])
-    }
+    const element = digitElements.current[digit];
 
-    setPressedDigits((prev) => prev + digit.toString());
+    queue.run([
+      () => element?.classList.add(styles.button_pressed),
+      () => sleep(100),
+      () => element?.classList.remove(styles.button_pressed),
+    ])
+
+    pressedDigits.current += digit.toString();
   }
 
   const blink = useCallback(async (state: LockState.Failure | LockState.Success) => {
@@ -54,11 +53,10 @@ export function SmartLockDevice(props: Props) {
     setCheckButtonState(LockState.None);
   }, [])
 
-  const enteredDigitsRef = useStateAsRef(pressedDigits);
-
   async function validateAccessCodeInput() {
-    const digits = enteredDigitsRef.current;
-    const result = props.validPins.includes(digits) ? LockState.Success : LockState.Failure;
+    const result = props.validPins.includes(pressedDigits.current)
+      ? LockState.Success
+      : LockState.Failure;
 
     await queue.run([
       queue.repeat(2, [
@@ -67,7 +65,7 @@ export function SmartLockDevice(props: Props) {
       ]),
       () => blink(result),
       () => {
-        setPressedDigits('');
+        pressedDigits.current = '';
       }
     ])
   }
@@ -82,7 +80,7 @@ export function SmartLockDevice(props: Props) {
       window.clearTimeout(timeout);
       timeout = window.setTimeout(async () => {
         const pin = props.preview![current];
-        const digits = enteredDigitsRef.current;
+        const digits = pressedDigits.current;
 
         if (digits.length < pin.length) {
           handleDigitPress(parseInt(pin[digits.length]), true);
@@ -105,25 +103,26 @@ export function SmartLockDevice(props: Props) {
 
   return (
     <div className={cn([
-      "rounded-[60px] p-[8px] font-geist-mono text-[18px] inline-flex",
+      "rounded-[60px] p-2 font-geist-mono text-[18px] inline-flex",
       {
         'bg-gray': !props.outline,
         'bg-transparent border-[2px] border-text-light border-dashed': props.outline,
+        preview: props.preview != null,
       }
     ])}>
       <div className={cn([
-        "rounded-[52px] flex flex-col flex-nowrap p-[24px]",
+        "rounded-[52px] flex flex-col flex-nowrap p-6",
         {
           "bg-dark border border-solid border-darker": !props.outline,
           "bg-transparent border-[2px] border-text-light border-dashed": props.outline,
         }
       ])}>
-        <div className="flex flex-col gap-[16px]">
+        <div className="flex flex-col gap-4">
           {
             digitGrid.map((col, rowIndex) => (
               <div
                 key={rowIndex}
-                className="w-full flex flex-row justify-end gap-[16px]"
+                className="w-full flex flex-row justify-end gap-4"
               >
                 {
                   col.map((row, index) => {
@@ -177,9 +176,6 @@ export function SmartLockDevice(props: Props) {
 
         <div className="flex w-full justify-center mt-[30px]">
           <SmartLockIcon outline={props.outline} />
-          {/* <div className="border inline-flex justify-center items-center border-darker rounded-full size-[50px]">
-            🌐
-          </div> */}
         </div>
       </div>
     </div>
